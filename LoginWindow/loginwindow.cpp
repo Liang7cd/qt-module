@@ -31,8 +31,11 @@ LoginWindow::LoginWindow(QWidget *parent) :
     if(QFileInfo::exists(m_loginInfoFileName)) {
         this->getLoginSaveInfo();
     }
-    m_loginPermissions = NULL_USERS;
+
     this->interfaceFormatInit();
+
+    m_loginPermissions = NULL_USERS;
+    m_progressIndicator = new QProgressIndicator(this);
 }
 
 LoginWindow::~LoginWindow()
@@ -43,6 +46,7 @@ LoginWindow::~LoginWindow()
 int LoginWindow::startLogin()
 {
     qDebug("");
+    this->show();
     if(m_autoLogin.enable)
     {
         if(m_userID == m_autoLogin.userID)
@@ -53,13 +57,14 @@ int LoginWindow::startLogin()
                 qInfo(u8"auto login. ID:[%d], Name:[%s], Password:[%s], ExtraData:[%s]", m_userID, qPrintable(m_loginInfo.name.toUtf8()),
                        qPrintable(m_loginInfo.password.toUtf8()), qPrintable(m_loginExtraData.toUtf8()));
                 emit loginInfoVerification(m_loginInfo, m_loginExtraData);
+                ui->pushButton_login->setEnabled(false);
+                m_progressIndicator->startAnimation();
                 return 0;
             }
         }else{
             qWarning("auto login failed! userID not found!");
         }
     }
-    this->show();
     return 0;
 }
 
@@ -70,9 +75,11 @@ int LoginWindow::logout()
     return 0;
 }
 
-void LoginWindow::loginReturn(int login_ok, LOGIN_PERMISSIONS loginPermissions)
+void LoginWindow::loginReturn(bool login_ok, LOGIN_PERMISSIONS loginPermissions)
 {
     qDebug("login_ok:[%d], loginPermissions:[%d]", login_ok, loginPermissions);
+    ui->pushButton_login->setEnabled(true);
+    m_progressIndicator->stopAnimation();
     if(login_ok) {
         m_loginPermissions = loginPermissions;
         this->hide();
@@ -96,7 +103,7 @@ void LoginWindow::interfaceFormatInit()
     ui->pushButton_clear->setGeometry(50,235,120,30);
     ui->pushButton_login->setGeometry(230,235,120,30);
     //密码输入的时候显示圆点
-    //ui->lineEdit_password->setEchoMode(QLineEdit::Password);
+    ui->lineEdit_password->setEchoMode(QLineEdit::Password);
 
     //调整字体的大小
     QFont font;
@@ -151,9 +158,8 @@ int LoginWindow::loginInfoSave()
     QDomElement user = doc.createElement("User");
     user.setAttribute("ID", "1");
     user.setAttribute("Name", m_loginInfo.name);
-    //QString enc_password = encryptionStr(m_loginInfo.password);
-    //user.setAttribute("Password", enc_password);
-    user.setAttribute("Password", m_loginInfo.password);
+    QString enc_password = encryptionStr(m_loginInfo.password);
+    user.setAttribute("Password", enc_password);
     user.setAttribute("ExtraData", m_loginExtraData);
     user_list.appendChild(user);
 
@@ -209,9 +215,8 @@ int LoginWindow::getLoginSaveInfo()
                     {
                         m_userID = xmlreader.attributes().value("ID").toString().toInt();
                         m_loginInfo.name = xmlreader.attributes().value("Name").toString();
-                        //QString enc_password = xmlreader.attributes().value("Password").toString();
-                        //m_loginInfo.password = encryptionStr(enc_password);
-                        m_loginInfo.password = xmlreader.attributes().value("Password").toString();
+                        QString enc_password = xmlreader.attributes().value("Password").toString();
+                        m_loginInfo.password = encryptionStr(enc_password);
                         m_loginExtraData = xmlreader.attributes().value("ExtraData").toString();
                         qDebug(u8"ID:[%d], Name:[%s], Password:[%s], ExtraData:[%s]", m_userID, qPrintable(m_loginInfo.name.toUtf8()),
                                qPrintable(m_loginInfo.password.toUtf8()), qPrintable(m_loginExtraData.toUtf8()));
@@ -271,6 +276,8 @@ void LoginWindow::on_pushButton_login_clicked()
             }
         }
         emit loginInfoVerification(m_loginInfo, m_loginExtraData);
+        ui->pushButton_login->setEnabled(false);
+        m_progressIndicator->startAnimation();
     }
 }
 

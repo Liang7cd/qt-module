@@ -20,6 +20,7 @@ public:
 private slots:
     void on_pushButton_logout_clicked();
 
+    void closeInputDialog();
     void loginInfoVerification(LoginInfo loginInfo, QString loginExtraData);
 
 private:
@@ -27,5 +28,6 @@ private:
 
     LoginWindow * m_loginWindow;
     void loginSuccess(LOGIN_PERMISSIONS loginPermissions);
+    void loginFailed(QString failInfo);
 };
 #endif // MAINWINDOW_H

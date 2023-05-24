@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QMessageBox>
+#include <QTimer>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -24,11 +27,23 @@ void MainWindow::on_pushButton_logout_clicked()
     this->hide();
 }
 
+void MainWindow::closeInputDialog()
+{
+    qDebug("Debug[%s/%d]", __FILE__, __LINE__);
+    this->loginSuccess(NORMAL_USERS);
+}
+
 void MainWindow::loginSuccess(LOGIN_PERMISSIONS loginPermissions)
 {
     qDebug("Debug[%s/%d] loginPermissions:[%d]", __FILE__, __LINE__, loginPermissions);
-    m_loginWindow->loginReturn(1, loginPermissions);
+    m_loginWindow->loginReturn(true, loginPermissions);
     this->show();
+}
+
+void MainWindow::loginFailed(QString failInfo)
+{
+    qDebug("Debug[%s/%d] failInfo:[%s]", __FILE__, __LINE__, qPrintable(failInfo.toUtf8()));
+    m_loginWindow->loginReturn(false, NULL_USERS);
 }
 
 void MainWindow::loginInfoVerification(LoginInfo loginInfo, QString loginExtraData)
@@ -41,7 +56,19 @@ void MainWindow::loginInfoVerification(LoginInfo loginInfo, QString loginExtraDa
     } else if(loginInfo.name == "test" && loginInfo.password == "test") {
         this->loginSuccess(TEST_USERS);
     } else {
-        this->loginSuccess(NORMAL_USERS);
+#if 1
+        QMessageBox messageBox(QMessageBox::NoIcon, QString(u8"登录校验").toUtf8(), QString(u8"用户:%1\n密码:%2\n资源代码:%3\n校验是否通过?").arg(loginInfo.name, loginInfo.password, loginExtraData).toUtf8(), QMessageBox::Yes|QMessageBox::No, NULL);
+        int iResult = messageBox.exec();
+        if (iResult == QMessageBox::Yes) {
+            qDebug("clicked on Yes");
+            this->loginSuccess(NORMAL_USERS);
+        } else {
+            qDebug("clicked on No");
+            this->loginFailed("clicked on No");
+        }
+#else
+        QTimer::singleShot(5000, this, SLOT(closeInputDialog()));
+#endif
     }
     return;
 }

@@ -4,6 +4,8 @@
 #include <QKeyEvent>
 #include <QWidget>
 
+#include "QProgressIndicator.h"
+
 //登录用户类型
 enum LOGIN_PERMISSIONS {NULL_USERS, ADMIN_USERS, TEST_USERS, NORMAL_USERS};
 
@@ -32,7 +34,7 @@ public:
 
     int startLogin();
     int logout();
-    void loginReturn(int login_ok, LOGIN_PERMISSIONS loginPermissions);
+    void loginReturn(bool login_ok, LOGIN_PERMISSIONS loginPermissions);
     LOGIN_PERMISSIONS m_loginPermissions;
 
 signals:
@@ -62,6 +64,7 @@ private:
     LoginInfo m_loginInfo;
     QString m_loginExtraData;
     AutoLogin m_autoLogin;
+    QProgressIndicator *m_progressIndicator;
 };
 
 #endif // LOGINWINDOW_H
