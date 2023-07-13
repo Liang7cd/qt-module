@@ -17,8 +17,17 @@ public:
     MainWindow(const QString versionInfo, QWidget *parent = nullptr);
     ~MainWindow();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
+private:
+    QString getHostMacAddress();
+
 private:
     Ui::MainWindow *ui;
     const QString m_versionInfo;
+    QString m_ftyMacAddr;
+
+    OutLog * m_outLog;
 };
 #endif // MAINWINDOW_H
