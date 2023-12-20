@@ -1,9 +1,11 @@
-#include "bluetoothconnect.h"
-#include "ui_bluetoothconnect.h"
+#include "bluetoothcontrol.h"
+#include "ui_bluetoothcontrol.h"
 
-BluetoothConnect::BluetoothConnect(QWidget *parent) :
+#include <QInputDialog>
+
+BluetoothControl::BluetoothControl(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::BluetoothConnect)
+    ui(new Ui::BluetoothControl)
 {
     ui->setupUi(this);
     this->setWindowTitle("连接设备");
@@ -227,12 +229,12 @@ BluetoothConnect::BluetoothConnect(QWidget *parent) :
 
 }
 
-BluetoothConnect::~BluetoothConnect()
+BluetoothControl::~BluetoothControl()
 {
     delete ui;
 }
 
-void BluetoothConnect::on_btnSerachDevice_clicked()
+void BluetoothControl::on_btnSerachDevice_clicked()
 {
     qDebug() << "开始搜索设备";
 
@@ -265,7 +267,7 @@ void BluetoothConnect::on_btnSerachDevice_clicked()
     discoveryAgent->setLowEnergyDiscoveryTimeout(5000);
 
     //搜索到设备后进入
-    connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered, this, &BluetoothConnect::DiscoveryDevice, Qt::QueuedConnection);
+    connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered, this, &BluetoothControl::DiscoveryDevice, Qt::QueuedConnection);
     //搜索设备发生错误
     connect(discoveryAgent, static_cast<void (QBluetoothDeviceDiscoveryAgent::*)(QBluetoothDeviceDiscoveryAgent::Error error)>(&QBluetoothDeviceDiscoveryAgent::error),
     [=](QBluetoothDeviceDiscoveryAgent::Error error){
@@ -286,7 +288,25 @@ void BluetoothConnect::on_btnSerachDevice_clicked()
     ui->lbImfor->setText("连接状态：正在搜索设备......");
 }
 
-void BluetoothConnect::DiscoveryDevice(QBluetoothDeviceInfo devInfo)
+void BluetoothControl::on_pushButton_find_clicked()
+{
+    bool bRet = false;
+    QString findMacAddr;
+    findMacAddr = QInputDialog::getText(this, u8"查找", u8"查找的MAC地址：", QLineEdit::Normal, findMacAddr, &bRet);
+    if (bRet) {
+        qDebug("findMacAddr:[%s]", qUtf8Printable(findMacAddr));
+
+        for(int i=0; i<devInfos.size(); i++) {
+            QBluetoothDeviceInfo devInfo = devInfos[i];
+            if(findMacAddr == devInfo.address().toString())
+            {
+                qDebug("rssi:[%d]", devInfo.rssi());
+            }
+        }
+    }
+}
+
+void BluetoothControl::DiscoveryDevice(QBluetoothDeviceInfo devInfo)
 {
     qDebug() << "搜索到设备";
     //名称不为空且是低功耗蓝牙

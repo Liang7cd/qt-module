@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>BluetoothConnect</class>
- <widget class="QMainWindow" name="BluetoothConnect">
+ <class>BluetoothControl</class>
+ <widget class="QMainWindow" name="BluetoothControl">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -50,8 +50,8 @@
          <widget class="QPushButton" name="btnSerachDevice">
           <property name="maximumSize">
            <size>
-            <width>100</width>
-            <height>100</height>
+            <width>16777215</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="font">
@@ -61,6 +61,18 @@
           </property>
           <property name="text">
            <string>搜索设备</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_find">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>查找</string>
           </property>
          </widget>
         </item>
@@ -88,7 +100,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

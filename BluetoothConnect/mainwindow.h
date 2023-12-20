@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "bluetoothconnect.h"
+#include "bluetoothcontrol.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,8 +17,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
-    BluetoothConnect *btConnect;/* 蓝牙连接对象 */
+    
+    BluetoothControl *btControl;/* 蓝牙连接对象 */
     QByteArray revData = ""; /* 收到的字符串暂存 收到\n之后会更新 */
 
     void ConnectCharacteristic(QLowEnergyService * m_service); /* 接收蓝牙消息的函数 */

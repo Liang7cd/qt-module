@@ -12,21 +12,21 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    this->btConnect = new BluetoothConnect();
+    this->btControl = new BluetoothControl();
 
     ui->lbImfor->setText("连接状态：未连接");
 
     /* 监听连接设备窗口发送的连接服务信号 */
-    connect(this->btConnect, &BluetoothConnect::toConectCharacteristic, this, &MainWindow::ConnectCharacteristic, Qt::QueuedConnection);
+    connect(this->btControl, &BluetoothControl::toConectCharacteristic, this, &MainWindow::ConnectCharacteristic, Qt::QueuedConnection);
     /* 连接界面和主界面的状态交互 */
-    connect(this->btConnect, &BluetoothConnect::stateChanged, this, &MainWindow::StateChanged, Qt::QueuedConnection);
+    connect(this->btControl, &BluetoothControl::stateChanged, this, &MainWindow::StateChanged, Qt::QueuedConnection);
 }
 
 MainWindow::~MainWindow()
 {
     if(ui->lbImfor->text() == "连接状态：已连接")
     {
-        this->btConnect->lowBtControl->disconnectFromDevice();
+        this->btControl->lowBtControl->disconnectFromDevice();
     }
     delete ui;
 }
@@ -70,7 +70,7 @@ void MainWindow::StateChanged(QString newState)
 
 void MainWindow::on_pbDetect_clicked()
 {
-    this->btConnect->show();
+    this->btControl->show();
 }
 
 void MainWindow::on_pbSend_clicked()
@@ -97,7 +97,7 @@ void MainWindow::on_pbSend_clicked()
         //       qDebug() << s;
 
         //以WriteWithoutResponse这种模式发送的数据  长度不能超过20bytes，也就是20个字符
-        btConnect->m_service->writeCharacteristic(btConnect->m_characteristic,s.toUtf8(),QLowEnergyService::WriteMode::WriteWithoutResponse);
+        btControl->m_service->writeCharacteristic(btControl->m_characteristic,s.toUtf8(),QLowEnergyService::WriteMode::WriteWithoutResponse);
     }
 }
 
