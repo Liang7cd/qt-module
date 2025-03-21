@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QLockFile>
 #include <QMessageBox>
+#include <QDebug>
 
 static const QString buildVersionInfo()
 {
@@ -31,12 +32,12 @@ static const QString getLockFilePath(int flag)
     // 获取应用程序的名称
     QString appName = QApplication::applicationName();
     if(!flag) {
-        // 构建文件锁的路径
+        // 构建文件锁的路径（锁文件的位置在“程序当前目录\.OutLog.lock”）
         lockFilePath = QApplication::applicationDirPath() + "/." + appName + ".lock";
     } else {
         // 获取用户的主目录
         QString homePath = QDir::homePath();
-        // 构建文件锁的路径
+        // 构建文件锁的路径（锁文件的位置在“C:\Users\用户名\.OutLog.lock”）
         lockFilePath = homePath + QDir::separator() + "." + appName + ".lock";
     }
     return lockFilePath;
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
     QString versionInfo = buildVersionInfo();
 
     QString lockFilePath = getLockFilePath(0);
+    qDebug() << lockFilePath;
     // 创建文件锁
     QLockFile lockFile(lockFilePath);
     // 尝试加锁（100毫秒超时）

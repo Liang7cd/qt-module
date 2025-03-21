@@ -53,7 +53,7 @@ void OutLog::LogMessageOutput(QtMsgType type, const QMessageLogContext &context,
     case QtFatalMsg:
         text = QString(u8"[Fatal]");
     }
-    text.append(QString(u8"[%1]").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz")));
+    text.append(QString(u8"[%1]").arg(QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")));
     //提取文件名
     QStringList list = QString(context.file).split("\\");
     text.append(QString(u8"[%1]").arg(list.at(list.count()-1)));
@@ -70,7 +70,7 @@ void OutLog::LogMessageOutput(QtMsgType type, const QMessageLogContext &context,
     m_logFile.setFileName(m_logFileName);
     m_logFile.open(QFileDevice::WriteOnly | QFileDevice::Append);
     m_textStream.setDevice(&m_logFile);
-    m_textStream << data << endl;
+    m_textStream << data << Qt::endl;
     m_logFile.close();
     m_mutex.unlock();
     switch(type)
@@ -107,6 +107,11 @@ void OutLog::logInit()
                qUtf8Printable(m_logNumber), qUtf8Printable(m_logDateTime));
 
         if(QFileInfo::exists(m_logFileName)) {
+            m_logFile.setFileName(m_logFileName);
+            m_logFile.open(QFileDevice::WriteOnly | QFileDevice::Append);
+            m_textStream.setDevice(&m_logFile);
+            m_textStream << "\r\n** ###Program abnormal exit!!! **" << Qt::endl;
+            m_logFile.close();
             this->logSave();
         }
     } else {
@@ -125,7 +130,7 @@ void OutLog::logInit()
     m_logFile.setFileName(m_logFileName);
     m_logFile.open(QFileDevice::WriteOnly | QFileDevice::Truncate);
     m_textStream.setDevice(&m_logFile);
-    m_textStream << "** Factory Log Start. Version:[" + m_versionInfo + "] **\r\n" << endl;
+    m_textStream << "** Factory Log Start. Version:[" + m_versionInfo + "] **\r\n" << Qt::endl;
     m_logFile.close();
 
     //安装上述自定义函数
@@ -150,7 +155,7 @@ int OutLog::logSave()
     m_logFile.setFileName(m_logFileName);
     m_logFile.open(QFileDevice::WriteOnly | QFileDevice::Append);
     m_textStream.setDevice(&m_logFile);
-    m_textStream << "\r\n** Factory Log End. **" << endl;
+    m_textStream << "\r\n** Factory Log End. **" << Qt::endl;
     m_logFile.close();
 
     //重命名并移动日志文件到备份目录
