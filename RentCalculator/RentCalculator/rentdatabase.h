@@ -5,10 +5,13 @@
 #include <QFile>
 
 typedef struct RentInfo {
-    QString date;
-    QString rent;
-    QString electric;
-    QString water;
+    QString Date;
+    QString ElectricMeter;
+    QString WaterMeter;
+    QString RoomPrice;
+    QString ElectricBill;
+    QString WaterBill;
+    QString TotalRent;
 } RentInfo;
 
 class RentDataBase : public QObject
@@ -18,12 +21,14 @@ public:
     explicit RentDataBase(QObject *parent = NULL);
     ~RentDataBase();
 
-    int DataBaseInit(QString user);
+    int DataBaseInit(QString& user);
     int DataBaseWrite(RentInfo rentInfo);
 
 private:
     QString m_rentInfoFileName;
     QFile m_rentInfoFile;
+
+    QList<RentInfo> m_rentInfo;
 };
 
 #endif // RENTDATABASE_H

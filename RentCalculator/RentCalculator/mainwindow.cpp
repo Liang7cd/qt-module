@@ -8,8 +8,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    QString rentInfo;
     m_rentDataBase = new RentDataBase(this);
-    m_rentDataBase->DataBaseInit(this->accessibleName());
+    m_rentDataBase->DataBaseInit(rentInfo);
+
+    ui->rentInfoList->setText(rentInfo);
 }
 
 MainWindow::~MainWindow()
